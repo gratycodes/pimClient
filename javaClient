@@ -1,0 +1,83 @@
+package httpClient;
+
+
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+  
+public class PIMClient 
+    {
+	
+	  public void getplans() throws ClientProtocolException, IOException 
+	  
+	{
+ 
+		try 
+		{
+				
+			HttpClient httpClient = HttpClientBuilder.create().build();
+			HttpGet getRequest = new HttpGet("http://localhost:8180/rest/migrations/1/results");
+			getRequest.addHeader("accept", "application/xml");
+			HttpResponse response = httpClient.execute(getRequest);
+			if (response.getStatusLine().getStatusCode() != 200) 
+			{
+					throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+			}
+			BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+			String output;
+			while ((output = br.readLine()) != null) 
+			{
+					System.out.println(output);
+			}
+        } 
+		catch (ClientProtocolException e) 
+		{
+			e.printStackTrace();
+ 
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void createplan(String plan) throws ClientProtocolException, IOException 
+	{
+		try 
+		{
+			HttpClient client = HttpClientBuilder.create().build();
+			HttpPost postrequest = new HttpPost("http://localhost:8180/rest/migrations");
+			StringEntity entity = new StringEntity(plan);
+			postrequest.setEntity(entity);
+			postrequest.setHeader("Accept", "application/json");
+			postrequest.setHeader("Content-type", "application/json");
+            HttpResponse response = client.execute(postrequest);
+			if (response.getStatusLine().getStatusCode() != 200) 
+			{
+					throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+			}
+			    
+			    
+		}
+		catch (ClientProtocolException e) 
+		{
+			e.printStackTrace();
+ 
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	
+	
+	}
+
+
+}
